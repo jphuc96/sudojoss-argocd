@@ -1,0 +1,4 @@
+---
+# Source: vault/templates/server-disruptionbudget.yaml
+# PodDisruptionBudget to prevent degrading the server cluster through
+# voluntary cluster changes.

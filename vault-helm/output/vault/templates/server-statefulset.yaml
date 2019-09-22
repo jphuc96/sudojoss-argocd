@@ -1,0 +1,140 @@
+---
+# Source: vault/templates/server-statefulset.yaml
+# StatefulSet to run the actual vault server cluster.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vault
+  namespace: default
+  labels:
+    helm.sh/chart: vault-0.1.2
+    app.kubernetes.io/name: vault
+    app.kubernetes.io/instance: vault
+    app.kubernetes.io/managed-by: Tiller
+spec:
+  serviceName: vault
+  podManagementPolicy: Parallel
+  replicas: 1
+  updateStrategy:
+    type: OnDelete
+  selector:
+    matchLabels:
+      helm.sh/chart: vault-0.1.2
+      app.kubernetes.io/name: vault
+      app.kubernetes.io/instance: vault
+      component: server
+  template:
+    metadata:
+      labels:
+        helm.sh/chart: vault-0.1.2
+        app.kubernetes.io/name: vault
+        app.kubernetes.io/instance: vault
+        component: server
+      
+    spec:
+      
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: vault
+                  release: "vault"
+                  component: server
+              topologyKey: kubernetes.io/hostname
+  
+      
+      
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: vault
+      securityContext:
+        fsGroup: 1000
+      volumes:
+        
+        - name: config
+          configMap:
+            name: vault-config
+  
+        - name: userconfig-gcs-storage-backend
+          secret:
+            secretName: gcs-storage-backend
+      containers:
+        - name: vault
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            
+  
+          securityContext:
+            privileged: true
+          image: "vault:1.2.2"
+          command: 
+          - "/bin/sh"
+          - "-ec"
+  
+          args: 
+          - |
+            sed -E "s/HOST_IP/${HOST_IP?}/g" /vault/config/extraconfig-from-values.hcl > /tmp/storageconfig.hcl;
+            sed -Ei "s/POD_IP/${POD_IP?}/g" /tmp/storageconfig.hcl;
+            chown vault:vault /tmp/storageconfig.hcl;
+            /usr/local/bin/docker-entrypoint.sh vault server -config=/tmp/storageconfig.hcl
+  
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: VAULT_ADDR
+              value: "http://127.0.0.1:8200"
+            - name: VAULT_API_ADDR
+              value: "http://$(POD_IP):8200"
+            - name: SKIP_CHOWN
+              value: "true"
+            
+            
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/vault/userconfig/gcs-storage-backend/vault-service-account.json"
+            
+          volumeMounts:
+          
+    
+    
+  
+  
+            - name: config
+              mountPath: /vault/config
+  
+            - name: userconfig-gcs-storage-backend
+              readOnly: true
+              mountPath: /vault/userconfig/gcs-storage-backend
+          ports:
+            - containerPort: 8200
+              name: http
+            - containerPort: 8201
+              name: internal
+            - containerPort: 8202
+              name: replication
+          readinessProbe:
+            # Check status; unsealed vault servers return 0
+            # The exit code reflects the seal status:
+            #   0 - unsealed
+            #   1 - error
+            #   2 - sealed
+            exec:
+              command: ["/bin/sh", "-ec", "vault status -tls-skip-verify"]
+            failureThreshold: 2
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+  
+
