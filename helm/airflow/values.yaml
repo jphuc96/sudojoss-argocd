@@ -282,7 +282,7 @@ ingress:
   ## enable ingress
   ## Note: If you want to change url prefix for web ui or flower even if you do not use ingress,
   ## you can still change ingress.web.path and ingress.flower.path
-  enabled: false
+  enabled: true
   ##
   ## Configure the webserver endpoint
   web:
@@ -300,7 +300,7 @@ ingress:
     path: ""
     ##
     ## hostname for the webserver
-    host: ""
+    host: "airflow.sudojoss.com"
     ##
     ## Annotations for the webserver
     ## Airflow webserver handles relative path completely, just let your load balancer give the HTTP
@@ -332,7 +332,7 @@ ingress:
     ## request to have been be at the root.
     ## That's why we need a reverse proxy/load balancer that is able to strip the path
     ## NOTE: do NOT keep trailing slash. For root configuration, set and empty string
-    path: ""
+    path: "/flower"
     ##
     ## Configure the liveness path. Keep to "/" for Flower >= jan 2018.
     ## For previous version, enter the same path than in the 'path' key
@@ -489,7 +489,7 @@ serviceAccount:
   ## Specifies whether a ServiceAccount should be created
   create: true
   ## The name of the ServiceAccount to use.
-  ## If not set and create is true, a name is generated using the fullname template
+  ## If not set and ceate is true, a name is generated using the fullname template
   name:
 
 
@@ -500,7 +500,7 @@ postgresql:
   ##
   ## Use the PostgreSQL chart dependency.
   ## Set to false if bringing your own PostgreSQL.
-  enabled: true
+  enabled: false
 
   ##
   ## The name of an existing secret that contains the postgres password.
@@ -547,7 +547,7 @@ redis:
   ##
   ## Use the redis chart dependency.
   ## Set to false if bringing your own redis.
-  enabled: true
+  enabled: false
 
   ##
   ## The name of an existing secret that contains the redis password.
