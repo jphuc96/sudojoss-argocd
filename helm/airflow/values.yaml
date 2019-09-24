@@ -504,7 +504,7 @@ postgresql:
 
   ##
   ## The name of an existing secret that contains the postgres password.
-  existingSecret: airflow-postgres
+  existingSecret: airflow
 
   ## Name of the key containing the secret.
   existingSecretKey: postgres-password
@@ -551,14 +551,14 @@ redis:
 
   ##
   ## The name of an existing secret that contains the redis password.
-  existingSecret:
+  existingSecret: airflow
 
   ## Name of the key containing the secret.
   existingSecretKey: redis-password
 
   ##
   ## If you are bringing your own redis, you can set the host in redisHost.
-  ## redisHost:
+  redisHost: redis-master.redis.svc.cluster.local
   ##
   ## Redis password
   ##
