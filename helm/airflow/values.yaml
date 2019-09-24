@@ -504,7 +504,7 @@ postgresql:
 
   ##
   ## The name of an existing secret that contains the postgres password.
-  existingSecret:
+  existingSecret: airflow-postgres
 
   ## Name of the key containing the secret.
   existingSecretKey: postgres-password
@@ -512,13 +512,13 @@ postgresql:
   ##
   ## If you are bringing your own PostgreSQL, you should set postgresHost and
   ## also probably service.port, postgresUser, postgresPassword, and postgresDatabase
-  ## postgresHost:
+  postgresHost: pg.sudojoss.com
   ##
   ## PostgreSQL port
   service:
     port: 5432
   ## PostgreSQL User to create.
-  postgresUser: postgres
+  postgresUser: airflow
   ##
   ## PostgreSQL Password for the new user.
   ## If not set, a random 10 characters password will be used.
