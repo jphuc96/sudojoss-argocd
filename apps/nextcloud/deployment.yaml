@@ -1,0 +1,89 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: nextcloud
+  name: nextcloud
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+    spec:
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: nextcloud-config-claim
+      - name: data
+        persistentVolumeClaim:
+          claimName: nextcloud-data-claim
+      - name: local-home
+        persistentVolumeClaim:
+          claimName: nextcloud-local-home-claim
+      - name: nextcloud-db
+        persistentVolumeClaim:
+          claimName: nextcloud-db-claim
+      containers:
+      - name: nextcloud
+        image: linuxserver/nextcloud:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 443
+        env:
+        - name: MYSQL_DATABASE
+          value: nextcloud
+        - name: MYSQL_HOST
+          value: nextcloud
+        - name: MYSQL_PASSWORD
+          value: nextcloud
+        - name: MYSQL_USER
+          value: nextcloud
+        - name: PGID
+          value: "1000"
+        - name: PUID
+          value: "1000"
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1024Mi"
+        volumeMounts:
+        - mountPath: /config
+          name: config
+        - mountPath: /data
+          name: data
+        - mountPath: /ext-data/home/jphuc96
+          name: local-home
+      - name: nextcloud-db
+        image: mariadb:latest
+        imagePullPolicy: IfNotPresent
+        args:
+        - --transaction-isolation=READ-COMMITTED
+        - --binlog-format=ROW
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_DATABASE
+          value: nextcloud
+        - name: MYSQL_PASSWORD
+          value: nextcloud
+        - name: MYSQL_ROOT_PASSWORD
+          value: mysql_rootpasswd
+        - name: MYSQL_USER
+          value: nextcloud
+        resources:
+          requests:
+            cpu: "125m"
+            memory: "256Mi"
+          limits:
+            cpu: "250m"
+            memory: "512Mi"
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: nextcloud-db
+      restartPolicy: Always

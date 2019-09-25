@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: nextcloud
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    ingress.kubernetes.io/protocol: https
+    ingress.kubernetes.io/ssl-redirect: "true"
+    traefik.ingress.kubernetes.io/frontend-entry-points: http,https
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+    traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    # nginx
+    # kubernetes.io/tls-acme: "true"
+    # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: "10G"
+    # ingress.kubernetes.io/proxy-body-size: "10G"
+    # nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    # nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+
+spec:
+  rules:
+  - host: cloud.sudojoss.com
+    http:
+      paths: 
+        - path: /
+          backend:
+            serviceName: nextcloud
+            servicePort: https
+  # tls:
+  #   - secretName: traefik-cloud.sudojoss.com
