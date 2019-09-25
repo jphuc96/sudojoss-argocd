@@ -1,0 +1,59 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: nextcloud-config
+  labels:
+   app: nextcloud
+spec:
+  storageClassName: nextcloud-config
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/opt/k8s/nextcloud/config"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: nextcloud-data
+  labels:
+    app: nextcloud
+spec:
+  storageClassName: nextcloud-data
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/opt/k8s/nextcloud/data"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: nextcloud-local-home
+  labels:
+    app: nextcloud
+spec:
+  storageClassName: nextcloud-local-home
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/jphuc96/"
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: nextcloud-db
+  labels:
+    app: nextcloud
+spec:
+  storageClassName: nextcloud-db
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/opt/k8s/nextcloud/db"
