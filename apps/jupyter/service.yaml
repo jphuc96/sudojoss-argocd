@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: jupyter-notebook
+spec:
+  selector:
+    app: jupyter-notebook
+  ports:
+  - name: '8888'
+    port: 8888
+    targetPort: 8888

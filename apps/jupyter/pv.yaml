@@ -1,0 +1,14 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: jupyter-notebook
+  labels:
+    type: local
+spec:
+  storageClassName: jupyter-notebook
+  capacity:
+    storage: 32Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/opt/k8s/jupyter-notebook/home"
