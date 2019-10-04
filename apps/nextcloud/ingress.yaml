@@ -9,6 +9,12 @@ metadata:
     traefik.ingress.kubernetes.io/frontend-entry-points: http,https
     traefik.ingress.kubernetes.io/redirect-entry-point: https
     traefik.ingress.kubernetes.io/redirect-permanent: "true"
+    traefik.ingress.kubernetes.io/buffering: |
+      maxrequestbodybytes: 10485760
+      memrequestbodybytes: 2097153
+      maxresponsebodybytes: 10485761
+      memresponsebodybytes: 2097152
+      retryexpression: IsNetworkError() && Attempts() <= 2
     # nginx
     # kubernetes.io/tls-acme: "true"
     # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
